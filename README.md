@@ -341,81 +341,9 @@ Key environment variables in `.env`:
 
 ---
 
-## 🚀 Future Roadmap
-
-This project is designed as a foundation for expansion. See [FINAL_YEAR_PROJECT_EXPANSION_PLAN.pdf](FINAL_YEAR_PROJECT_EXPANSION_PLAN.pdf) for detailed roadmap including:
-
-### Phase 1: Medical Image Analysis with VLMs
-- Integration of Vision-Language Models (Gemini Vision, GPT-4V, LLaVA-Med)
-- Support for X-rays, CT scans, MRI, ultrasound
-- Automated measurement extraction from images
-
-### Phase 2: Multi-Modal Correlation
-- Correlate lab results with imaging findings
-- Temporal analysis for disease progression tracking
-- Integrated diagnosis from multiple data sources
-
-### Phase 3: Specialized AI Models
-- CheXNet for chest X-ray pathology detection
-- Diabetic retinopathy detection
-- Medical image segmentation (U-Net)
-
-### Phase 4: Enhanced UI
-- Medical image viewer with annotations
-- Side-by-side comparison tools
-- Interactive 3D visualization
-
-### Phase 5: Database & Patient Management
-- PostgreSQL for patient records
-- DICOM support for medical imaging
-- Longitudinal tracking
-
-### Phase 6: Advanced Analytics
-- Risk prediction models
-- Treatment response monitoring
-- Population health analytics
-
-### Phase 7: Production Deployment
-- Docker containerization
-- HIPAA compliance
-- Cloud deployment (AWS/Azure/GCP)
-
-**Timeline:** 6-8 months for complete implementation
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! This is a final year project with potential for expansion.
-
-### How to Contribute:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Areas for Contribution:
-- Additional clinical parameter support
-- New reference ranges for different populations
-- Improved NLP for parameter extraction
-- Medical image analysis features
-- UI/UX improvements
-- Documentation and tutorials
-- Test coverage expansion
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Final Year Project**  
-AI-Powered Multi-Modal Clinical Decision Support System
 
 ---
 
@@ -438,18 +366,7 @@ For issues or questions:
 
 ---
 
-## 📚 Citations
 
-If you use this project in your research or academic work, please cite:
-
-```bibtex
-@software{clinical_decision_support_2026,
-  title={AI-Powered Multi-Modal Clinical Decision Support System},
-  author={Your Name},
-  year={2026},
-  url={https://github.com/yourusername/clinical-decision-support}
-}
-```
 
 ---
 
