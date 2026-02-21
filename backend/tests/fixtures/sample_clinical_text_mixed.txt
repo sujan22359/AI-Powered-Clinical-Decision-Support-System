@@ -1,0 +1,26 @@
+CLINICAL LABORATORY REPORT
+
+Patient: Bob Johnson
+Date: 2024-02-20
+
+VITAL SIGNS:
+BP: 135/88 mmHg
+Pulse: 78 bpm
+
+BLOOD TESTS:
+Glucose: 105 mg/dL
+Cholesterol: 210 mg/dL
+LDL: 110 mg/dL
+HDL: 42 mg/dL
+Triglycerides: 155 mg/dL
+
+COMPLETE BLOOD COUNT:
+Hb: 13.8 g/dL
+White Blood Cell Count: 10.5 ×10³/μL
+Platelet: 220 ×10³/μL
+
+RENAL PANEL:
+Creatinine: 1.1 mg/dL
+
+NOTES:
+Some parameters slightly elevated. Recommend lifestyle modifications and follow-up in 3 months.

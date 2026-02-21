@@ -1,0 +1,26 @@
+CLINICAL LABORATORY REPORT
+
+Patient: Jane Smith
+Date: 2024-02-20
+
+VITAL SIGNS:
+Blood Pressure: 110/70 mmHg
+Heart Rate: 72 bpm
+
+BLOOD CHEMISTRY:
+Blood Glucose: 85 mg/dL
+Total Cholesterol: 180 mg/dL
+LDL Cholesterol: 90 mg/dL
+HDL Cholesterol: 55 mg/dL
+Triglycerides: 120 mg/dL
+
+HEMATOLOGY:
+Hemoglobin: 14.5 g/dL
+WBC: 7.0 ×10³/μL
+Platelet Count: 250 ×10³/μL
+
+KIDNEY FUNCTION:
+Creatinine: 0.9 mg/dL
+
+NOTES:
+All parameters within normal range. Continue routine health maintenance.

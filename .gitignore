@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables (CRITICAL - Contains API Keys)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.kiro/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.bak
+convert_to_pdf.py
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Project specific
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+frontend/__pycache__/
+
+# Test fixtures (optional - uncomment if you don't want to share test files)
+# backend/tests/fixtures/*.pdf
+# backend/tests/fixtures/*.docx
+
+# Internal Documentation (Keep GitHub clean and professional)
+# These files are for development reference only
+TESTING_GUIDE.md
+USER_GUIDE.md
+17_DAY_DEVELOPMENT_PLAN.md
+CLEANUP_SUMMARY.md
+PROJECT_STRUCTURE.md
+FINAL_STRUCTURE.txt
+GITHUB_STRUCTURE.md
+PUSH_TO_GITHUB.md
