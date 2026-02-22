@@ -369,6 +369,8 @@ class AnalysisEngine:
                     
                     # Convert extracted data to ClinicalParameter objects
                     clinical_parameters = []
+                    seen_parameters = set()  # Track parameters to avoid duplicates
+                    
                     for param_data in extracted_params_data:
                         param_name = param_data["name"]
                         
@@ -378,27 +380,46 @@ class AnalysisEngine:
                             systolic_value = param_data["value"]["systolic"]
                             diastolic_value = param_data["value"]["diastolic"]
                             
-                            # Get reference ranges
-                            systolic_range = self.reference_range_db.get_range("Systolic Blood Pressure")
-                            diastolic_range = self.reference_range_db.get_range("Diastolic Blood Pressure")
+                            # Check for duplicates
+                            systolic_key = f"Systolic Blood Pressure_{systolic_value}"
+                            diastolic_key = f"Diastolic Blood Pressure_{diastolic_value}"
                             
-                            clinical_parameters.append(ClinicalParameter(
-                                name="Systolic Blood Pressure",
-                                value=systolic_value,
-                                unit=param_data["unit"],
-                                reference_range=systolic_range
-                            ))
+                            if systolic_key not in seen_parameters:
+                                seen_parameters.add(systolic_key)
+                                # Get reference ranges
+                                systolic_range = self.reference_range_db.get_range("Systolic Blood Pressure")
+                                
+                                clinical_parameters.append(ClinicalParameter(
+                                    name="Systolic Blood Pressure",
+                                    value=systolic_value,
+                                    unit=param_data["unit"],
+                                    reference_range=systolic_range
+                                ))
                             
-                            clinical_parameters.append(ClinicalParameter(
-                                name="Diastolic Blood Pressure",
-                                value=diastolic_value,
-                                unit=param_data["unit"],
-                                reference_range=diastolic_range
-                            ))
+                            if diastolic_key not in seen_parameters:
+                                seen_parameters.add(diastolic_key)
+                                diastolic_range = self.reference_range_db.get_range("Diastolic Blood Pressure")
+                                
+                                clinical_parameters.append(ClinicalParameter(
+                                    name="Diastolic Blood Pressure",
+                                    value=diastolic_value,
+                                    unit=param_data["unit"],
+                                    reference_range=diastolic_range
+                                ))
                         else:
                             # Single-value parameter
                             param_value = param_data["value"]
                             param_unit = param_data["unit"]
+                            
+                            # Create unique key for deduplication
+                            param_key = f"{param_name}_{param_value}_{param_unit}"
+                            
+                            # Skip if we've already seen this exact parameter
+                            if param_key in seen_parameters:
+                                self.logger.debug(f"Skipping duplicate parameter: {param_name} = {param_value} {param_unit}")
+                                continue
+                            
+                            seen_parameters.add(param_key)
                             
                             # Look up reference range
                             ref_range = self.reference_range_db.get_range(param_name)
@@ -414,10 +435,22 @@ class AnalysisEngine:
                     if clinical_parameters:
                         evaluated_params = self.threshold_evaluator.evaluate_parameters(clinical_parameters)
                         
+                        # Track seen risk indicators to prevent duplicates
+                        seen_risks = set()
+                        
                         # Convert evaluated parameters to risk indicators
                         # Only include parameters with MEDIUM or HIGH risk
                         for evaluated_param in evaluated_params:
                             if evaluated_param.risk_level in [RiskLevel.MEDIUM, RiskLevel.HIGH]:
+                                # Create unique key for this risk
+                                risk_key = f"{evaluated_param.parameter.name}_{evaluated_param.parameter.value}_{evaluated_param.risk_level.value}"
+                                
+                                # Skip if we've already added this risk
+                                if risk_key in seen_risks:
+                                    self.logger.debug(f"Skipping duplicate risk indicator: {evaluated_param.parameter.name}")
+                                    continue
+                                
+                                seen_risks.add(risk_key)
                                 risk_indicator = self._create_threshold_risk_indicator(evaluated_param)
                                 threshold_risk_indicators.append(risk_indicator)
                         
