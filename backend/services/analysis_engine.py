@@ -12,7 +12,8 @@ from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass, asdict
 from datetime import datetime
 
-from backend.services.llm_service import LLMService, LLMResponse
+from backend.config import Config
+from backend.services.gemini_service import GeminiService, LLMResponse
 from backend.services.document_parser import DocumentParser, DocumentParsingError
 # Threshold-based risk assessment modules
 from backend.services.parameter_extractor import ParameterExtractor
@@ -84,20 +85,21 @@ class AnalysisEngine:
     - Ensures medical safety compliance
     """
     
-    def __init__(self, llm_service: Optional[LLMService] = None, 
+    def __init__(self, llm_service: Optional[GeminiService] = None, 
                  document_parser: Optional[DocumentParser] = None):
         """
         Initialize analysis engine with required services.
         
         Args:
-            llm_service: LLM service for AI processing (creates new if None)
+            llm_service: Gemini service for AI processing (creates new if None)
             document_parser: Document parser service (creates new if None)
         """
         self.logger = setup_logger(__name__)
         
-        # Initialize services
-        self.llm_service = llm_service or LLMService()
+        # Initialize services with Gemini
+        self.llm_service = llm_service or GeminiService()
         self.document_parser = document_parser or DocumentParser()
+        self.logger.info("Using Gemini AI for text analysis")
         
         # Initialize threshold-based risk assessment services
         self.parameter_extractor = ParameterExtractor()
@@ -117,18 +119,39 @@ class AnalysisEngine:
         # Risk indicator patterns for detection (order matters - check specific patterns first)
         self.risk_patterns = {
             "high": [
-                r"critical|severe|urgent|emergency|immediate attention",
-                r"abnormal.*high|extremely elevated|dangerously",
-                r"malignant|cancer|tumor|metastasis"
-            ],
-            "low": [
-                r"slightly.*(elevated|abnormal)|mildly.*(abnormal|elevated)|minor.*concern",
-                r"watch|monitor|follow.*up"
+                # Critical/Emergency terms
+                r"critical|severe|urgent|emergency|immediate attention|life-threatening",
+                # Serious injuries and conditions
+                r"complete tear|full.*thickness.*tear|rupture|avulsion|dislocation",
+                r"fracture|broken|displaced|comminuted|compound",
+                r"hemorrhage|bleeding|hematoma|contusion",
+                # Serious pathology
+                r"malignant|cancer|tumor|metastasis|mass",
+                r"infarction|stroke|ischemia|necrosis",
+                r"obstruction|occlusion|stenosis.*severe",
+                # Abnormal values
+                r"abnormal.*high|extremely elevated|dangerously|critically.*abnormal",
+                # Organ damage
+                r"perforation|abscess|gangrene|sepsis"
             ],
             "medium": [
+                # Moderate injuries
+                r"partial tear|grade.*[23]|moderate.*tear",
+                r"sprain|strain|edema|effusion|inflammation",
+                r"degenerative|arthritis|osteoarthritis",
+                # Moderate abnormalities
                 r"abnormal|elevated|concerning|requires attention",
                 r"outside.*range|above.*normal|below.*normal",
-                r"moderate.*risk|borderline"
+                r"moderate.*risk|borderline",
+                # Moderate pathology
+                r"nodule|lesion|cyst|polyp"
+            ],
+            "low": [
+                # Minor issues
+                r"minor.*tear|grade.*1|mild.*tear|minimal",
+                r"slightly.*(elevated|abnormal)|mildly.*(abnormal|elevated)|minor.*concern",
+                r"watch|monitor|follow.*up",
+                r"incidental.*finding|normal.*variant"
             ]
         }
         
@@ -664,13 +687,42 @@ class AnalysisEngine:
         Filter text content to remove unsafe medical language.
         
         Args:
-            text: Text content to filter
+            text: Text content to filter (can be string, dict, or list)
             
         Returns:
-            Filtered text content
+            Filtered text content as readable string
         """
+        # Handle non-string inputs
         if not text:
             return text
+        
+        # Convert to readable string if not already
+        if not isinstance(text, str):
+            # If it's a dict, extract the 'value' or create readable text
+            if isinstance(text, dict):
+                # Try to extract meaningful text from dict
+                if 'value' in text:
+                    text = str(text['value'])
+                elif 'explanation' in text:
+                    text = str(text['explanation'])
+                elif 'terminology' in text and 'value' in text:
+                    # Format: "Value - Explanation (Terminology)"
+                    parts = []
+                    if text.get('value'):
+                        parts.append(str(text['value']))
+                    if text.get('explanation'):
+                        parts.append(str(text['explanation']))
+                    if text.get('terminology'):
+                        parts.append(f"({text['terminology']})")
+                    text = ' - '.join(parts) if parts else str(text)
+                else:
+                    # Fallback: create readable text from dict
+                    text = ' - '.join(f"{v}" for k, v in text.items() if v and k != 'reference_range')
+            # If it's a list, join items
+            elif isinstance(text, list):
+                text = ', '.join(str(item) for item in text)
+            else:
+                text = str(text)
         
         filtered_text = text
         
@@ -724,14 +776,24 @@ class AnalysisEngine:
         
         # Process raw indicators from LLM
         for indicator in raw_indicators:
-            if not indicator or not indicator.strip():
+            # Handle both string and dict formats
+            if isinstance(indicator, dict):
+                # Extract text from dict (could be various formats)
+                indicator_text = indicator.get('finding', '') or indicator.get('description', '') or str(indicator)
+            elif isinstance(indicator, str):
+                indicator_text = indicator
+            else:
+                # Skip non-string, non-dict items
                 continue
             
-            severity = self._categorize_risk_severity(indicator)
-            category = self._categorize_risk_type(indicator)
+            if not indicator_text or not indicator_text.strip():
+                continue
+            
+            severity = self._categorize_risk_severity(indicator_text)
+            category = self._categorize_risk_type(indicator_text)
             
             risk_indicators.append(RiskIndicator(
-                finding=indicator.strip(),
+                finding=indicator_text.strip(),
                 category=category,
                 severity=severity,
                 description=f"Identified {severity} risk indicator in {category} category"

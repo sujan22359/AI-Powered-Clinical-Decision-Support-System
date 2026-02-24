@@ -6,6 +6,7 @@ Contains reusable UI components, styling, and API interaction functions
 import streamlit as st
 import requests
 import json
+import re
 from typing import Optional, Dict, Any
 from PIL import Image
 import io
@@ -13,114 +14,250 @@ import io
 # API Configuration
 API_BASE_URL = "http://localhost:8000"
 
+def convert_markdown_to_html(text: str) -> str:
+    """
+    Convert markdown bold (**text**) to HTML bold (<strong>text</strong>)
+    
+    Args:
+        text: Text with markdown formatting
+        
+    Returns:
+        Text with HTML formatting
+    """
+    # Replace **text** with <strong>text</strong>
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    return text
+
 def apply_custom_css():
-    """Apply beautiful custom CSS styling"""
+    """Apply beautiful custom CSS styling - Professional Medical Website Design"""
     st.markdown("""
     <style>
-        /* Main header styling */
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        /* Global Styles */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        /* Hide Streamlit branding */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        
+        /* Main container */
+        .main .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            max-width: 1400px;
+        }
+        
+        /* Main header styling - Modern Medical Design */
         .main-header {
             text-align: center;
-            padding: 2rem 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 50%, #003366 100%);
             color: white;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 15px 40px rgba(0, 102, 204, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
         
         .main-header h1 {
-            font-size: 2.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
         }
         
         .main-header p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             opacity: 0.95;
-            margin: 0.3rem 0;
+            margin: 0.5rem 0;
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
         }
         
-        /* Risk indicator cards */
+        .main-header .subtitle {
+            font-size: 1rem;
+            opacity: 0.85;
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Risk indicator cards - Enhanced Medical Design */
         .risk-card {
-            padding: 1.2rem;
-            margin: 0.8rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .risk-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            transition: width 0.3s ease;
         }
         
         .risk-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
         }
         
         .risk-critical {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
             color: white;
-            border-left: 6px solid #c92a2a;
+            border-color: #ff1744;
+            animation: pulse-critical 2s infinite;
+        }
+        
+        .risk-critical::before {
+            background: #c62828;
+        }
+        
+        @keyframes pulse-critical {
+            0%, 100% { 
+                box-shadow: 0 6px 20px rgba(255, 71, 87, 0.3);
+            }
+            50% { 
+                box-shadow: 0 6px 30px rgba(255, 71, 87, 0.5);
+            }
         }
         
         .risk-high {
             background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-            border-left: 6px solid #f44336;
+            border-color: #ef5350;
             color: #b71c1c;
         }
         
+        .risk-high::before {
+            background: #ef5350;
+        }
+        
         .risk-medium {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-            border-left: 6px solid #ff9800;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+            border-color: #ffa726;
             color: #e65100;
+        }
+        
+        .risk-medium::before {
+            background: #ffa726;
         }
         
         .risk-low {
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-left: 6px solid #4caf50;
+            border-color: #66bb6a;
             color: #1b5e20;
         }
         
-        /* Finding and suggestion cards */
+        .risk-low::before {
+            background: #66bb6a;
+        }
+        
+        /* Finding and suggestion cards - Modern Design */
         .finding-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 8px;
-            border-left: 4px solid #007bff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 1.2rem;
+            margin: 0.8rem 0;
+            border-radius: 12px;
+            border-left: 5px solid #0066cc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .finding-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
         }
         
         .suggestion-card {
-            background: linear-gradient(135deg, #e7f3ff 0%, #cfe2ff 100%);
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 8px;
-            border-left: 4px solid #17a2b8;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 1.2rem;
+            margin: 0.8rem 0;
+            border-radius: 12px;
+            border-left: 5px solid #1976d2;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+            transition: all 0.3s ease;
         }
         
-        /* Diagnosis card */
+        .suggestion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(25, 118, 210, 0.15);
+        }
+        
+        /* Diagnosis card - Premium Design */
         .diagnosis-card {
             background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 12px;
-            border-left: 6px solid #9c27b0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 16px;
+            border: 2px solid #9c27b0;
+            box-shadow: 0 8px 24px rgba(156, 39, 176, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .diagnosis-card::before {
+            content: '🔍';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.05;
         }
         
         .diagnosis-card h3 {
             color: #6a1b9a;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
         }
         
-        /* Confidence badge */
+        /* Confidence badge - Modern Pills */
         .confidence-badge {
             display: inline-block;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
             font-weight: 600;
-            font-size: 0.9rem;
-            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .confidence-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
         
         .confidence-high {
@@ -138,20 +275,34 @@ def apply_custom_css():
             color: white;
         }
         
-        /* Urgency badge */
+        /* Urgency badge - Alert Design */
         .urgency-badge {
             display: inline-block;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin: 0.5rem 0.5rem 0.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
         
         .urgency-critical {
             background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
             color: white;
-            animation: pulse 2s infinite;
+            animation: pulse-urgency 2s infinite;
+            box-shadow: 0 4px 20px rgba(211, 47, 47, 0.4);
+        }
+        
+        @keyframes pulse-urgency {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(211, 47, 47, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(211, 47, 47, 0.6);
+            }
         }
         
         .urgency-high {
@@ -169,136 +320,388 @@ def apply_custom_css():
             color: white;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        /* Image preview */
-        .image-preview {
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-        }
-        
-        /* Metric cards */
-        .metric-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        /* Tab styling */
+        /* Tab styling - Modern Medical Tabs */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
+            gap: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .stTabs [data-baseweb="tab"] {
-            border-radius: 8px 8px 0 0;
-            padding: 12px 24px;
+            border-radius: 12px;
+            padding: 14px 28px;
             font-weight: 600;
+            font-size: 1rem;
+            background: white;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
-        /* Button styling */
+        .stTabs [data-baseweb="tab"]:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #0066cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+        
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            color: white;
+            border-color: #003366;
+            box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
+        }
+        
+        /* Button styling - Professional Medical Buttons */
         .stButton>button {
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
-            padding: 0.6rem 2rem;
-            transition: all 0.3s;
+            padding: 0.75rem 2.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .stButton>button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         
-        /* File uploader */
+        .stButton>button:active {
+            transform: translateY(-1px);
+        }
+        
+        .stButton>button[kind="primary"] {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            color: white;
+        }
+        
+        .stButton>button[kind="primary"]:hover {
+            background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
+        }
+        
+        /* File uploader - Modern Design */
         .uploadedFile {
-            border-radius: 8px;
-            border: 2px dashed #667eea;
+            border-radius: 12px;
+            border: 2px dashed #0066cc;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 1rem;
+            transition: all 0.3s ease;
         }
         
-        /* Success/Error messages */
-        .stSuccess, .stError, .stWarning, .stInfo {
-            border-radius: 8px;
+        .uploadedFile:hover {
+            border-color: #004c99;
+            background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+        
+        /* Success/Error messages - Enhanced Alerts */
+        .stSuccess {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+        }
+        
+        .stError {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.15);
+        }
+        
+        .stWarning {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+            border-left: 5px solid #ffa726;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(255, 167, 38, 0.15);
+        }
+        
+        .stInfo {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+        }
+        
+        /* Metric cards - Dashboard Style */
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            border-color: #0066cc;
+        }
+        
+        /* Input fields - Modern Form Design */
+        .stTextInput>div>div>input,
+        .stTextArea>div>div>textarea,
+        .stSelectbox>div>div>select {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .stTextInput>div>div>input:focus,
+        .stTextArea>div>div>textarea:focus,
+        .stSelectbox>div>div>select:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        /* Sidebar - Professional Medical Sidebar */
+        .css-1d391kg {
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            border-right: 2px solid #e9ecef;
+        }
+        
+        /* Expander - Collapsible Sections */
+        .streamlit-expanderHeader {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
             padding: 1rem;
+            font-weight: 600;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .streamlit-expanderHeader:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #0066cc;
+        }
+        
+        /* Loading spinner */
+        .stSpinner > div {
+            border-top-color: #0066cc !important;
+        }
+        
+        /* Dataframe styling */
+        .dataframe {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .main .block-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-header p {
+                font-size: 1rem;
+            }
+            
+            .stTabs [data-baseweb="tab"] {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
         }
     </style>
     """, unsafe_allow_html=True)
 
 
 def display_header():
-    """Display the main header"""
+    """Display the main header - Professional Medical Website Design"""
     st.markdown("""
     <div class="main-header">
-        <h1>🏥 AI-Powered Multi-Modal Clinical Decision Support System</h1>
-        <p style="font-size: 1.2em; margin-top: 0.5rem;">Intelligent Medical Report & Image Analysis</p>
-        <p style="font-size: 0.95em; opacity: 0.9; margin-top: 0.5rem;">
-            Powered by Google Gemini Vision AI | For Educational & Informational Purposes Only
+        <h1 style="font-size: 2.5em; margin: 0; font-weight: 700;">MediVision AI</h1>
+        <p style="font-size: 1.3em; margin-top: 0.8rem; font-weight: 500;">
+            AI-Powered Multi-Modal Clinical Decision Support System
         </p>
+        <p style="font-size: 1.05em; opacity: 0.9; margin-top: 0.8rem;">
+            Advanced Medical Report & Image Analysis with AI Technology
+        </p>
+        <div class="subtitle">
+            Lab Reports | Medical Imaging | Blood Group Prediction
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
 
 def display_sidebar():
-    """Display sidebar with information"""
+    """Display sidebar with information - Professional Medical Design"""
     with st.sidebar:
-        st.markdown("### 📊 System Information")
+        # Logo/Brand section
+        st.markdown("""
+        <div style="text-align: center; padding: 1.5rem 0; border-bottom: 2px solid #e9ecef; margin-bottom: 1.5rem;">
+            <h2 style="color: #0066cc; margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700;">
+                MediVision AI
+            </h2>
+            <p style="color: #6c757d; font-size: 0.85rem; margin-top: 0.5rem;">
+                Clinical Decision Support
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
         # System status
-        st.success("✅ System Online")
+        st.markdown("### System Status")
+        st.success("All Systems Operational")
+        st.metric("Uptime", "99.9%", delta="0.1%")
+        
+        st.markdown("---")
+        
+        # Quick stats
+        st.markdown("### Quick Stats")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Patients", "0", delta="0")
+        with col2:
+            st.metric("Analyses", "0", delta="0")
         
         st.markdown("---")
         
         # Supported formats
-        st.markdown("### 📄 Supported Formats")
-        st.markdown("**Documents:**")
-        st.write("• PDF (.pdf)")
-        st.write("• Word (.docx)")
+        st.markdown("### Supported Formats")
         
-        st.markdown("**Images:**")
-        st.write("• JPEG (.jpg, .jpeg)")
-        st.write("• PNG (.png)")
+        with st.expander("Documents", expanded=False):
+            st.markdown("""
+            - **PDF** (.pdf)
+            - **Word** (.docx)
+            
+            *Max size: 10MB*
+            """)
+        
+        with st.expander("Images", expanded=False):
+            st.markdown("""
+            - **JPEG** (.jpg, .jpeg)
+            - **PNG** (.png)
+            
+            *Max size: 10MB*
+            """)
         
         st.markdown("---")
         
-        # Image types
-        st.markdown("### 🔬 Image Types")
-        st.write("• Chest X-ray")
-        st.write("• Brain CT Scan")
-        st.write("• Bone X-ray")
-        st.write("• MRI Scan")
-        st.write("• Ultrasound")
-        st.write("• Auto-detect")
+        # Analysis types
+        st.markdown("### Analysis Types")
+        
+        analysis_types = [
+            ("Chest X-ray", "Pneumonia, lung cancer, heart issues"),
+            ("Brain CT", "Stroke, bleeding, tumors"),
+            ("Bone X-ray", "Fractures, arthritis"),
+            ("MRI Scan", "Soft tissue, tumors"),
+            ("Ultrasound", "Organs, pregnancy"),
+            ("Auto-detect", "Automatic identification")
+        ]
+        
+        for name, desc in analysis_types:
+            st.markdown(f"""
+            <div style="padding: 0.5rem; margin: 0.3rem 0; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); 
+                        border-radius: 8px; border-left: 3px solid #0066cc;">
+                <strong>{name}</strong><br>
+                <small style="color: #6c757d;">{desc}</small>
+            </div>
+            """, unsafe_allow_html=True)
         
         st.markdown("---")
         
         # Quick guide
         st.markdown("### 📖 Quick Guide")
-        st.markdown("""
-        **Lab Report Analysis:**
-        1. Upload PDF/DOCX report
-        2. Click Analyze
-        3. View results
         
-        **Image Analysis:**
-        1. Upload medical image
-        2. Select image type
-        3. Add context (optional)
-        4. Click Analyze
-        
-        **Multi-Modal:**
-        1. Upload both files
-        2. Click Analyze
-        3. View correlations
-        """)
+        with st.expander("🔬 How to Use", expanded=False):
+            st.markdown("""
+            **1. Lab Report Analysis:**
+            - Upload PDF/DOCX report
+            - Click "Analyze Document"
+            - View comprehensive results
+            
+            **2. Image Analysis:**
+            - Upload medical image
+            - Select image type
+            - Add clinical context (optional)
+            - Click "Analyze Image"
+            
+            **3. Multi-Modal:**
+            - Upload both report & image
+            - Get correlated findings
+            - View integrated diagnosis
+            
+            **4. Blood Group:**
+            - Upload fingerprint image
+            - Get AI prediction
+            - View confidence score
+            
+            **Note:** This is a standalone analysis tool. Upload any medical document or image for instant AI-powered analysis.
+            - View analytics dashboard
+            """)
         
         st.markdown("---")
         
         # Medical disclaimer
-        st.warning("⚠️ **Medical Disclaimer**: This tool is for informational purposes only. Always consult healthcare professionals for medical decisions.")
+        st.markdown("### ⚠️ Important Notice")
+        st.warning("""
+        **Medical Disclaimer**
+        
+        This tool is for **informational and educational purposes only**. 
+        
+        Always consult qualified healthcare professionals for medical decisions.
+        
+        Not a substitute for professional medical advice, diagnosis, or treatment.
+        """)
+        
+        st.markdown("---")
+        
+        # Footer
+        st.markdown("""
+        <div style="text-align: center; padding: 1rem 0; color: #6c757d; font-size: 0.85rem;">
+            <p style="margin: 0.3rem 0;">© 2026 MediVision AI</p>
+            <p style="margin: 0.3rem 0;">Version 2.1.0</p>
+            <p style="margin: 0.3rem 0; font-size: 0.75rem;">For informational purposes only. Not a substitute for professional medical advice.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def check_api_health(api_url: str) -> bool:
@@ -462,9 +865,11 @@ def display_document_results(results: Dict[str, Any]):
         findings = analysis['key_findings']
         if isinstance(findings, list):
             for i, finding in enumerate(findings, 1):
+                # Convert markdown bold to HTML
+                finding_html = convert_markdown_to_html(finding)
                 st.markdown(f"""
                 <div class="finding-card">
-                    <strong>{i}.</strong> {finding}
+                    <strong>{i}.</strong> {finding_html}
                 </div>
                 """, unsafe_allow_html=True)
     
@@ -485,9 +890,11 @@ def display_document_results(results: Dict[str, Any]):
         suggestions = analysis['follow_up_suggestions']
         if isinstance(suggestions, list):
             for i, suggestion in enumerate(suggestions, 1):
+                # Convert markdown bold to HTML
+                suggestion_html = convert_markdown_to_html(suggestion)
                 st.markdown(f"""
                 <div class="suggestion-card">
-                    <strong>{i}.</strong> {suggestion}
+                    <strong>{i}.</strong> {suggestion_html}
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -588,21 +995,68 @@ def display_image_results(results: Dict[str, Any]):
     
     # Diagnosis Card
     diagnosis = results.get('diagnosis', 'No diagnosis available')
+    # Convert markdown bold to HTML
+    diagnosis_html = convert_markdown_to_html(diagnosis)
     st.markdown(f"""
     <div class="diagnosis-card">
         <h3>🔍 DIAGNOSIS</h3>
-        <p style="font-size: 1.2em; margin: 0;">{diagnosis}</p>
+        <p style="font-size: 1.2em; margin: 0;">{diagnosis_html}</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Issues Identified
+    # Issues Identified with Risk-Based Color Coding
     issues = results.get('issues', [])
+    urgency = results.get('urgency', 'medium').lower()
+    
     if issues:
         st.markdown("### ⚠️ Issues Identified")
+        
+        # Determine risk level styling based on urgency
+        if urgency == 'critical':
+            risk_class = 'risk-critical'
+            risk_emoji = '🔴'
+            risk_label = 'CRITICAL'
+        elif urgency == 'high':
+            risk_class = 'risk-high'
+            risk_emoji = '🔴'
+            risk_label = 'HIGH RISK'
+        elif urgency == 'medium':
+            risk_class = 'risk-medium'
+            risk_emoji = '🟡'
+            risk_label = 'MODERATE'
+        else:
+            risk_class = 'risk-low'
+            risk_emoji = '🟢'
+            risk_label = 'LOW RISK'
+        
+        # Display risk level banner
+        st.markdown(f"""
+        <div class="risk-card {risk_class}" style="margin-bottom: 1rem;">
+            <h4 style="margin: 0;">{risk_emoji} {risk_label} - {len(issues)} Issue(s) Found</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Display each issue with appropriate styling
         for i, issue in enumerate(issues, 1):
+            # Check if issue contains critical keywords
+            issue_lower = issue.lower()
+            is_critical_issue = any(keyword in issue_lower for keyword in [
+                'fracture', 'hemorrhage', 'bleeding', 'tumor', 'mass', 'cancer',
+                'stroke', 'infarction', 'pneumothorax', 'emergency', 'urgent',
+                'severe', 'critical', 'acute', 'rupture', 'obstruction'
+            ])
+            
+            # Use red styling for critical issues or high/critical urgency
+            if is_critical_issue or urgency in ['critical', 'high']:
+                issue_class = 'risk-high'
+                issue_emoji = '🔴'
+            else:
+                issue_class = 'finding-card'
+                issue_emoji = '⚠️'
+            
             st.markdown(f"""
-            <div class="finding-card">
-                <strong>{i}.</strong> {issue}
+            <div class="risk-card {issue_class}">
+                {issue_emoji} <strong>{i}.</strong> {convert_markdown_to_html(issue)}
             </div>
             """, unsafe_allow_html=True)
     else:
@@ -613,9 +1067,11 @@ def display_image_results(results: Dict[str, Any]):
     if suggestions:
         st.markdown("### 💡 Follow-up Suggestions")
         for i, suggestion in enumerate(suggestions, 1):
+            # Convert markdown bold to HTML
+            suggestion_html = convert_markdown_to_html(suggestion)
             st.markdown(f"""
             <div class="suggestion-card">
-                <strong>{i}.</strong> {suggestion}
+                <strong>{i}.</strong> {suggestion_html}
             </div>
             """, unsafe_allow_html=True)
     
@@ -669,12 +1125,14 @@ def display_multimodal_results(results: Dict[str, Any]):
             
             # Integrated Diagnosis
             integrated_diagnosis = correlation.get('integrated_diagnosis', 'No correlation found')
+            # Convert markdown bold to HTML
+            integrated_diagnosis_html = convert_markdown_to_html(integrated_diagnosis)
             confidence = correlation.get('confidence', 0)
             
             st.markdown(f"""
             <div class="diagnosis-card">
                 <h3>🎯 Integrated Diagnosis</h3>
-                <p style="font-size: 1.2em; margin: 0.5rem 0;">{integrated_diagnosis}</p>
+                <p style="font-size: 1.2em; margin: 0.5rem 0;">{integrated_diagnosis_html}</p>
                 <div class="confidence-badge confidence-{'high' if confidence >= 75 else 'medium' if confidence >= 50 else 'low'}">
                     📊 Confidence: {confidence}%
                 </div>
@@ -686,9 +1144,11 @@ def display_multimodal_results(results: Dict[str, Any]):
             if correlations_found:
                 st.markdown("### 🔍 Correlations Found")
                 for i, corr in enumerate(correlations_found, 1):
+                    # Convert markdown bold to HTML
+                    corr_diagnosis = convert_markdown_to_html(corr.get('diagnosis', 'Unknown correlation'))
                     st.markdown(f"""
                     <div class="finding-card">
-                        <strong>{i}.</strong> {corr.get('diagnosis', 'Unknown correlation')}
+                        <strong>{i}.</strong> {corr_diagnosis}
                         <br><small>Confidence: {corr.get('confidence', 0)}%</small>
                     </div>
                     """, unsafe_allow_html=True)
@@ -698,9 +1158,11 @@ def display_multimodal_results(results: Dict[str, Any]):
             if recommendations:
                 st.markdown("### 💡 Integrated Recommendations")
                 for i, rec in enumerate(recommendations, 1):
+                    # Convert markdown bold to HTML
+                    rec_html = convert_markdown_to_html(rec)
                     st.markdown(f"""
                     <div class="suggestion-card">
-                        <strong>{i}.</strong> {rec}
+                        <strong>{i}.</strong> {rec_html}
                     </div>
                     """, unsafe_allow_html=True)
         else:

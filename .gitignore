@@ -95,3 +95,13 @@ PROJECT_STRUCTURE.md
 FINAL_STRUCTURE.txt
 GITHUB_STRUCTURE.md
 PUSH_TO_GITHUB.md
+
+# Machine Learning Models (large files)
+backend/models/ml_models/*.h5
+backend/models/ml_models/*.keras
+backend/models/ml_models/*.pt
+backend/models/ml_models/*.pth
+backend/models/ml_models/*.pkl
+backend/models/ml_models/*.joblib
+backend/models/ml_models/*.onnx
+backend/models/ml_models/blood_group_model/

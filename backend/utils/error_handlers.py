@@ -14,7 +14,6 @@ from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from backend.services.document_parser import DocumentParsingError
-from backend.services.llm_service import LLMServiceError
 from backend.services.analysis_engine import AnalysisEngineError
 from backend.utils.logger import setup_logger
 
@@ -82,9 +81,6 @@ class ErrorHandler:
         self.error_mappings = {
             # Document parsing errors
             DocumentParsingError: self._handle_document_parsing_error,
-            
-            # LLM service errors
-            LLMServiceError: self._handle_llm_service_error,
             
             # Analysis engine errors
             AnalysisEngineError: self._handle_analysis_engine_error,
@@ -195,64 +191,6 @@ class ErrorHandler:
             message=f"Document parsing failed: {error_message}",
             category=ErrorCategory.PARSING,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            details=error_message,
-            suggestions=suggestions,
-            request_id=request_id
-        )
-    
-    def _handle_llm_service_error(
-        self, 
-        error: LLMServiceError, 
-        request: Optional[Request],
-        context: Optional[Dict[str, Any]],
-        request_id: str
-    ) -> ErrorResponse:
-        """Handle LLM service errors"""
-        error_message = str(error)
-        
-        # Determine specific error type and status code
-        if "rate limit" in error_message.lower():
-            error_code = "AI_RATE_LIMIT_EXCEEDED"
-            status_code = status.HTTP_429_TOO_MANY_REQUESTS
-            suggestions = [
-                "Please wait a moment and try again",
-                "The AI service is experiencing high demand"
-            ]
-        elif "authentication" in error_message.lower() or "api key" in error_message.lower():
-            error_code = "AI_AUTHENTICATION_FAILED"
-            status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-            suggestions = [
-                "The AI service configuration needs attention",
-                "Please contact support"
-            ]
-        elif "service unavailable" in error_message.lower():
-            error_code = "AI_SERVICE_UNAVAILABLE"
-            status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-            suggestions = [
-                "The AI service is temporarily unavailable",
-                "Please try again in a few minutes"
-            ]
-        elif "safety" in error_message.lower() or "blocked" in error_message.lower():
-            error_code = "AI_CONTENT_BLOCKED"
-            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
-            suggestions = [
-                "The document content was flagged by safety filters",
-                "Try uploading a different document",
-                "Ensure the document contains appropriate medical content"
-            ]
-        else:
-            error_code = "AI_SERVICE_ERROR"
-            status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-            suggestions = [
-                "The AI analysis service encountered an error",
-                "Please try again later"
-            ]
-        
-        return ErrorResponse(
-            error_code=error_code,
-            message=f"AI analysis service error: {error_message}",
-            category=ErrorCategory.AI_SERVICE,
-            status_code=status_code,
             details=error_message,
             suggestions=suggestions,
             request_id=request_id

@@ -280,3 +280,112 @@ def handle_multimodal_analysis():
                     st.markdown("---")
                     st.markdown("## 📊 Multi-Modal Analysis Results")
                     display_multimodal_results(results)
+
+
+
+def handle_blood_group_prediction():
+    """Handle blood group prediction from fingerprint"""
+    st.markdown("## 🩸 Blood Group Prediction from Fingerprint")
+    st.markdown("Upload a fingerprint image to predict blood group using AI")
+    
+    st.markdown("---")
+    
+    # File uploader
+    uploaded_fingerprint = st.file_uploader(
+        "Upload Fingerprint Image",
+        type=['jpg', 'jpeg', 'png'],
+        help="Upload a clear fingerprint image (JPEG or PNG)",
+        key="fingerprint_uploader"
+    )
+    
+    if uploaded_fingerprint is not None:
+        # Display file info and image preview
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.markdown("### 📸 Uploaded Image")
+            # Display the uploaded image
+            image = Image.open(uploaded_fingerprint)
+            st.image(image, caption="Fingerprint Image", width=300)
+            
+            # File info
+            file_size_mb = len(uploaded_fingerprint.getvalue()) / (1024 * 1024)
+            st.info(f"**Filename:** {uploaded_fingerprint.name}")
+            st.info(f"**Size:** {file_size_mb:.2f} MB")
+            st.info(f"**Dimensions:** {image.size[0]} x {image.size[1]}")
+        
+        with col2:
+            st.markdown("### 🔬 Prediction Results")
+            
+            # Analyze button
+            if st.button("🩸 Predict Blood Group", type="primary", use_container_width=True):
+                with st.spinner("🔄 Analyzing fingerprint pattern..."):
+                    try:
+                        import requests
+                        import time
+                        
+                        start_time = time.time()
+                        
+                        # Reset file pointer
+                        uploaded_fingerprint.seek(0)
+                        
+                        # Prepare the file for upload
+                        files = {
+                            'fingerprint': (
+                                uploaded_fingerprint.name,
+                                uploaded_fingerprint.getvalue(),
+                                uploaded_fingerprint.type
+                            )
+                        }
+                        
+                        # Make API request
+                        response = requests.post(
+                            f"{API_BASE_URL}/predict-blood-group",
+                            files=files,
+                            timeout=60
+                        )
+                        
+                        elapsed_time = time.time() - start_time
+                        
+                        if response.status_code == 200:
+                            result = response.json()
+                            
+                            # Display prediction
+                            st.success("✅ Prediction Complete!")
+                            
+                            # Main prediction
+                            st.markdown("---")
+                            st.markdown("### 🎯 Predicted Blood Group")
+                            
+                            # Large display of predicted blood group
+                            st.markdown(
+                                f"<div style='text-align: center; padding: 30px; "
+                                f"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); "
+                                f"border-radius: 15px; margin: 20px 0;'>"
+                                f"<h1 style='color: white; font-size: 72px; margin: 0;'>"
+                                f"{result['predicted_blood_group']}</h1>"
+                                f"<p style='color: white; font-size: 24px; margin: 10px 0;'>"
+                                f"Confidence: {result['confidence']}</p>"
+                                f"</div>",
+                                unsafe_allow_html=True
+                            )
+                            
+                            # Disclaimer
+                            st.markdown("---")
+                            st.warning(
+                                f"⚠️ **Medical Disclaimer:** {result['disclaimer']}"
+                            )
+                            
+                        else:
+                            st.error(f"❌ Prediction failed: {response.text}")
+                            
+                    except requests.exceptions.Timeout:
+                        st.error("⏱️ Request timed out. Please try again.")
+                    except requests.exceptions.ConnectionError:
+                        st.error("🔌 Cannot connect to backend. Please ensure the API is running.")
+                    except Exception as e:
+                        st.error(f"❌ Error: {str(e)}")
+    
+    else:
+        # Simple message when no file is uploaded
+        st.info("👆 Please upload a fingerprint image to begin prediction")

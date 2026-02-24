@@ -1,7 +1,7 @@
 # FastAPI main application entry point
 import io
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, status, Request, Form
 from fastapi.responses import JSONResponse
@@ -10,8 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.config import Config
 from backend.services.analysis_engine import AnalysisEngine, AnalysisEngineError
 from backend.services.document_parser import DocumentParsingError
-from backend.services.llm_service import LLMServiceError
-from backend.services.vision_analyzer import MedicalImageAnalyzer
+from backend.services.gemini_vision import GeminiMedicalImageAnalyzer
 from backend.utils.logger import setup_logger
 from backend.utils.error_handlers import error_handler, ErrorCategory, ErrorResponse
 
@@ -37,6 +36,7 @@ app.add_middleware(
 # Initialize analysis engine (will be initialized on startup)
 analysis_engine = None
 vision_analyzer = None
+blood_group_predictor = None  # Cache blood group predictor
 
 @app.get("/health")
 async def health_check():
@@ -575,11 +575,116 @@ def _correlate_findings(report_analysis: Dict, image_analysis: Dict) -> Dict:
     return correlation
 
 
+@app.post("/predict-blood-group")
+async def predict_blood_group(
+    request: Request,
+    fingerprint: UploadFile = File(..., description="Fingerprint image (JPEG/PNG)")
+) -> Dict[str, Any]:
+    """
+    Predict blood group from fingerprint image using trained ML model.
+    
+    Args:
+        fingerprint: Fingerprint image file (JPEG or PNG)
+    
+    Returns:
+        Dictionary containing prediction results with blood group and confidence
+    
+    Raises:
+        HTTPException: If prediction fails or file is invalid
+    """
+    logger.info(f"Blood group prediction request from {request.client.host}")
+    
+    try:
+        # Validate file type
+        if not fingerprint.content_type or not fingerprint.content_type.startswith('image/'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file type. Please upload an image file (JPEG or PNG)."
+            )
+        
+        # Read file content
+        file_content = await fingerprint.read()
+        
+        if len(file_content) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Empty file uploaded"
+            )
+        
+        # Log file info
+        logger.info(
+            f"Processing fingerprint image: {fingerprint.filename}, "
+            f"size: {len(file_content)} bytes, type: {fingerprint.content_type}"
+        )
+        
+        # Use cached predictor (initialized at startup)
+        global blood_group_predictor
+        if blood_group_predictor is None:
+            from backend.services.blood_group_predictor import BloodGroupPredictor
+            blood_group_predictor = BloodGroupPredictor(model_type="pytorch_cnn", enable_gradcam=True)
+        
+        # Make prediction
+        result = blood_group_predictor.predict(file_content)
+        
+        if not result["success"]:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Prediction failed: {result.get('error', 'Unknown error')}"
+            )
+        
+        # Format response
+        response = {
+            "success": True,
+            "filename": fingerprint.filename,
+            "predicted_blood_group": result["predicted_blood_group"],
+            "confidence": result["confidence_percent"],
+            "confidence_score": result["confidence"],
+            "all_probabilities": result["probabilities"],
+            "top_3_predictions": [
+                {
+                    "blood_group": bg,
+                    "probability": f"{prob * 100:.2f}%",
+                    "probability_score": prob
+                }
+                for bg, prob in result["top_3_predictions"]
+            ],
+            "model_info": {
+                "model_type": result["model_type"],
+                "supported_blood_groups": blood_group_predictor.BLOOD_GROUPS
+            },
+            "gradcam": {
+                "available": result.get("gradcam_available", False),
+                "image": result.get("gradcam_image", None)  # Base64 encoded image
+            },
+            "disclaimer": (
+                "IMPORTANT: This prediction is for informational purposes only and should not "
+                "replace laboratory blood typing. Always confirm blood group through proper "
+                "medical testing before any medical procedures."
+            )
+        }
+        
+        logger.info(
+            f"Blood group prediction successful: {result['predicted_blood_group']} "
+            f"(confidence: {result['confidence_percent']})"
+        )
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Blood group prediction error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Blood group prediction failed: {str(e)}"
+        )
+
+
 # Startup event to validate configuration
 @app.on_event("startup")
 async def startup_event():
     """Validate configuration on startup with detailed error reporting"""
-    global analysis_engine, vision_analyzer
+    global analysis_engine, vision_analyzer, blood_group_predictor
     try:
         logger.info("Starting Clinical Report Analyzer API...")
         
@@ -591,13 +696,22 @@ async def startup_event():
         analysis_engine = AnalysisEngine()
         logger.info("Analysis engine initialized successfully")
         
-        # Initialize vision analyzer
+        # Initialize vision analyzer with Gemini
         try:
-            vision_analyzer = MedicalImageAnalyzer(api_key=Config.GEMINI_API_KEY)
-            logger.info("Vision analyzer initialized successfully")
+            vision_analyzer = GeminiMedicalImageAnalyzer()
+            logger.info("✅ Vision analyzer initialized with Gemini AI")
         except Exception as e:
             logger.error(f"Failed to initialize vision analyzer: {str(e)}")
             vision_analyzer = None
+        
+        # Preload blood group predictor for faster first prediction
+        try:
+            from backend.services.blood_group_predictor import BloodGroupPredictor
+            blood_group_predictor = BloodGroupPredictor(model_type="pytorch_cnn", enable_gradcam=False)
+            logger.info("Blood group predictor preloaded successfully")
+        except Exception as e:
+            logger.warning(f"Failed to preload blood group predictor: {str(e)}")
+            blood_group_predictor = None
         
         # Validate LLM service connection
         if hasattr(analysis_engine.llm_service, 'validate_api_connection'):
@@ -738,3 +852,31 @@ async def shutdown_event():
     """Cleanup on shutdown"""
     logger.info("Clinical Report Analyzer API shutting down...")
     # Add any cleanup logic here if needed
+
+
+
+# ============================================================================
+# UTILITY ENDPOINTS
+# ============================================================================
+
+# Add measurement extraction endpoint
+@app.post("/extract-measurements")
+async def extract_measurements(request: Request, text: str = Form(...), image_type: str = Form("auto")) -> Dict:
+    """Extract measurements from text"""
+    try:
+        from backend.services.measurement_extractor import MeasurementExtractor
+        extractor = MeasurementExtractor()
+        
+        measurements = extractor.extract_measurements(text, image_type)
+        
+        return {
+            "success": True,
+            "measurements": measurements,
+            "message": f"Extracted {measurements.get('count', 0)} measurements"
+        }
+    except Exception as e:
+        logger.error(f"Measurement extraction failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

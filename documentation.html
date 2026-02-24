@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediVision AI - Comprehensive Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+        }
+        
+        .nav a {
+            color: #1e3c72;
+            text-decoration: none;
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .nav a:hover {
+            background: #e8f0fe;
+            color: #2a5298;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .content {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        h2 {
+            color: #1e3c72;
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #2a5298;
+        }
+        
+        h3 {
+            color: #2a5298;
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        h4 {
+            color: #333;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #1e3c72;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+        
+        .feature-card h4 {
+            color: #1e3c72;
+            margin-top: 0;
+        }
+        
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+        
+        .footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #2a5298;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .back-to-top:hover {
+            background: #1e3c72;
+            transform: translateY(-5px);
+        }
+        
+        @media print {
+            .nav, .back-to-top {
+                display: none;
+            }
+            .content {
+                box-shadow: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .content {
+                padding: 1.5rem;
+            }
+            .nav-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-content">
+            <h1>⚕️ MediVision AI</h1>
+            <p>Comprehensive Documentation - AI-Powered Clinical Decision Support System</p>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="#overview">Overview</a>
+            <a href="#problem">Problem Statement</a>
+            <a href="#unique">What Makes Us Unique</a>
+            <a href="#features">Core Features</a>
+            <a href="#tech-stack">Technology Stack</a>
+            <a href="#architecture">System Architecture</a>
+            <a href="#installation">Installation</a>
+            <a href="#usage">Usage Guide</a>
+            <a href="#api">API Documentation</a>
+            <a href="#implementation">Technical Implementation</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="content">
+            <section id="overview">
+                <h2>Project Overview</h2>
+                <p><strong>MediVision AI</strong> is an advanced AI-powered clinical decision support system designed to assist healthcare professionals and patients in analyzing medical reports, imaging studies, and laboratory results. The system combines state-of-the-art artificial intelligence with medical domain expertise to provide accurate, actionable insights from clinical data.</p>
+
+                <h3>What It Does</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Lab Report Analysis</h4>
+                        <p>Analyzes clinical laboratory reports (PDF/DOCX) to extract key findings, identify risk indicators, and provide follow-up recommendations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Medical Image Analysis</h4>
+                        <p>Processes medical images (X-rays, CT scans, MRI) to detect abnormalities, provide diagnostic insights, and assess urgency levels.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Multi-Modal Analysis</h4>
+                        <p>Combines both lab reports and medical images to provide integrated diagnostic insights with correlation analysis.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Blood Group Prediction</h4>
+                        <p>Uses a custom-trained PyTorch CNN model to predict blood groups from fingerprint images.</p>
+                    </div>
+                </div>
+
+                <h3>Target Users</h3>
+                <ul>
+                    <li>Healthcare professionals seeking AI-assisted diagnostic support</li>
+                    <li>Medical researchers analyzing clinical data</li>
+                    <li>Patients wanting to understand their medical reports</li>
+                    <li>Healthcare institutions implementing AI-driven decision support systems</li>
+                </ul>
+            </section>
+
+            <section id="problem">
+                <h2>Problem Statement</h2>
+                
+                <h3>The Challenge</h3>
+                <p>Healthcare professionals face several critical challenges in modern medical practice:</p>
+                
+                <ol>
+                    <li><strong>Information Overload:</strong> Doctors review hundreds of lab reports and medical images daily, leading to potential oversight of critical findings.</li>
+                    <li><strong>Time Constraints:</strong> Limited time per patient makes comprehensive analysis of complex medical data difficult.</li>
+                    <li><strong>Interpretation Complexity:</strong> Medical reports contain technical terminology and numerical data that patients struggle to understand.</li>
+                    <li><strong>Risk Detection:</strong> Critical values and abnormalities may be buried in lengthy reports, risking delayed intervention.</li>
+                    <li><strong>Multi-Modal Correlation:</strong> Correlating findings across different diagnostic modalities (labs + imaging) requires significant expertise and time.</li>
+                    <li><strong>Accessibility:</strong> General-purpose AI tools (ChatGPT, Claude, Gemini) lack medical-specific features and structured clinical output.</li>
+                </ol>
+
+                <h3>Our Solution</h3>
+                <p>MediVision AI addresses these challenges by providing:</p>
+                <ul>
+                    <li><strong>Automated Analysis:</strong> Instant processing of medical documents and images</li>
+                    <li><strong>Structured Output:</strong> Organized findings with severity classification</li>
+                    <li><strong>Risk Prioritization:</strong> Automatic highlighting of critical values and urgent findings</li>
+                    <li><strong>Multi-Modal Integration:</strong> Correlation of lab and imaging findings</li>
+                    <li><strong>Medical Safety:</strong> Built-in disclaimers and safety filters to prevent misuse</li>
+                    <li><strong>Threshold-Based Validation:</strong> Objective parameter evaluation against clinical reference ranges</li>
+                </ul>
+            </section>
+
+            <section id="unique">
+                <h2>What Makes MediVision AI Unique</h2>
+                
+                <h3>Comparison with General AI Tools (ChatGPT, Gemini, Claude)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>MediVision AI</th>
+                            <th>ChatGPT/Claude/Gemini</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Medical Specialization</strong></td>
+                            <td><span class="badge badge-success">✓ Purpose-built for clinical analysis</span></td>
+                            <td><span class="badge badge-danger">✗ General-purpose conversational AI</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Structured Output</strong></td>
+                            <td><span class="badge badge-success">✓ Standardized JSON format with sections</span></td>
+                            <td><span class="badge badge-danger">✗ Unstructured text responses</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Risk Classification</strong></td>
+                            <td><span class="badge badge-success">✓ Automatic severity categorization (High/Medium/Low)</span></td>
+                            <td><span class="badge badge-danger">✗ No systematic risk assessment</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Threshold Validation</strong></td>
+                            <td><span class="badge badge-success">✓ Objective parameter evaluation against reference ranges</span></td>
+                            <td><span class="badge badge-danger">✗ No clinical threshold checking</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multi-Modal Analysis</strong></td>
+                            <td><span class="badge badge-success">✓ Integrated lab + imaging correlation</span></td>
+                            <td><span class="badge badge-danger">✗ Limited multi-modal capabilities</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Medical Image Analysis</strong></td>
+                            <td><span class="badge badge-success">✓ Specialized medical imaging interpretation</span></td>
+                            <td><span class="badge badge-warning">⚠ Basic image description only</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Blood Group Prediction</strong></td>
+                            <td><span class="badge badge-success">✓ Custom CNN model trained on fingerprints</span></td>
+                            <td><span class="badge badge-danger">✗ Not available</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Safety Filters</strong></td>
+                            <td><span class="badge badge-success">✓ Medical compliance and disclaimer enforcement</span></td>
+                            <td><span class="badge badge-danger">✗ No medical-specific safety</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Integration</strong></td>
+                            <td><span class="badge badge-success">✓ RESTful API for healthcare systems</span></td>
+                            <td><span class="badge badge-danger">✗ Limited API access</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>HIPAA Considerations</strong></td>
+                            <td><span class="badge badge-success">✓ Designed with healthcare privacy in mind</span></td>
+                            <td><span class="badge badge-warning">⚠ General data handling</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Key Differentiators</h3>
+                
+                <h4>1. Medical Domain Expertise</h4>
+                <ul>
+                    <li><strong>15-Year Expert Persona:</strong> AI prompts engineered with senior medical consultant expertise</li>
+                    <li><strong>Systematic Review Protocols:</strong> Structured analysis (9-point chest X-ray, 10-point brain CT)</li>
+                    <li><strong>Clinical Terminology:</strong> Proper use of medical terminology with patient-friendly explanations</li>
+                </ul>
+
+                <h4>2. Dual Analysis Pipeline</h4>
+                <ul>
+                    <li><strong>AI-Powered Analysis:</strong> Gemini 2.5 Flash for intelligent interpretation</li>
+                    <li><strong>Threshold-Based Validation:</strong> Objective parameter checking against clinical reference ranges</li>
+                    <li><strong>Hybrid Risk Detection:</strong> Combines AI insights with rule-based critical value detection</li>
+                </ul>
+
+                <h4>3. Structured Clinical Output</h4>
+                <pre><code>{
+  "summary": "Professional clinical summary",
+  "key_findings": ["Structured findings with values"],
+  "risk_indicators": [
+    {
+      "finding": "Parameter: Value (Normal: Range)",
+      "severity": "high|medium|low",
+      "category": "cardiovascular|metabolic|etc",
+      "threshold_based": true,
+      "deviation_percent": 45.2
+    }
+  ],
+  "follow_up_suggestions": ["Actionable recommendations"],
+  "medical_disclaimer": "Safety disclaimer"
+}</code></pre>
+
+                <h4>4. Medical Safety Features</h4>
+                <ul>
+                    <li>Automatic medical disclaimers on all outputs</li>
+                    <li>Safety filters to prevent diagnostic language misuse</li>
+                    <li>Clear distinction between informational analysis and medical advice</li>
+                    <li>Urgency level assessment (Critical/High/Medium/Low)</li>
+                </ul>
+
+                <h4>5. Multi-Modal Intelligence</h4>
+                <ul>
+                    <li>Correlates lab findings with imaging results</li>
+                    <li>Identifies patterns across diagnostic modalities</li>
+                    <li>Provides integrated diagnostic insights</li>
+                    <li>Confidence scoring for correlations</li>
+                </ul>
+
+                <h4>6. Custom ML Models</h4>
+                <ul>
+                    <li><strong>Blood Group Predictor:</strong> Custom PyTorch CNN trained on fingerprint patterns</li>
+                    <li><strong>GradCAM Visualization:</strong> Explainable AI showing model decision areas</li>
+                    <li><strong>High Accuracy:</strong> Specialized model outperforms general-purpose AI</li>
+                </ul>
+            </section>
+
+            <section id="features">
+                <h2>Core Features</h2>
+
+                <h3>1. Lab Report Analysis</h3>
+                <h4>Capabilities:</h4>
+                <ul>
+                    <li>PDF and DOCX document parsing</li>
+                    <li>Automatic parameter extraction</li>
+                    <li>Reference range comparison</li>
+                    <li>Risk indicator detection</li>
+                    <li>Follow-up recommendations</li>
+                </ul>
+                <h4>Output Includes:</h4>
+                <ul>
+                    <li>Clinical summary</li>
+                    <li>Key findings with values</li>
+                    <li>Risk indicators (color-coded by severity)</li>
+                    <li>Threshold-based parameter evaluation</li>
+                    <li>Actionable follow-up suggestions</li>
+                </ul>
+
+                <h3>2. Medical Image Analysis</h3>
+                <h4>Supported Image Types:</h4>
+                <ul>
+                    <li>Chest X-rays</li>
+                    <li>Brain CT scans</li>
+                    <li>Bone X-rays</li>
+                    <li>MRI scans</li>
+                    <li>Ultrasound images</li>
+                    <li>Auto-detection mode</li>
+                </ul>
+                <h4>Analysis Features:</h4>
+                <ul>
+                    <li>Abnormality detection</li>
+                    <li>Diagnostic insights</li>
+                    <li>Confidence scoring</li>
+                    <li>Urgency assessment</li>
+                    <li>Structured findings report</li>
+                </ul>
+
+                <h3>3. Multi-Modal Analysis</h3>
+                <h4>Integration:</h4>
+                <ul>
+                    <li>Simultaneous lab report and image analysis</li>
+                    <li>Cross-modal correlation detection</li>
+                    <li>Integrated diagnostic insights</li>
+                    <li>Confidence-weighted recommendations</li>
+                </ul>
+                <h4>Use Cases:</h4>
+                <ul>
+                    <li>Diabetic retinopathy (glucose + retinal imaging)</li>
+                    <li>Pneumonia (WBC + chest X-ray)</li>
+                    <li>Cardiovascular risk (cholesterol + cardiac imaging)</li>
+                </ul>
+
+                <h3>4. Blood Group Prediction</h3>
+                <h4>Technology:</h4>
+                <ul>
+                    <li>Custom PyTorch CNN model</li>
+                    <li>Fingerprint pattern recognition</li>
+                    <li>GradCAM explainability</li>
+                    <li>Top-3 predictions with confidence</li>
+                </ul>
+                <h4>Supported Blood Groups:</h4>
+                <p>A+, A-, B+, B-, AB+, AB-, O+, O-</p>
+            </section>
+
+            <section id="tech-stack">
+                <h2>Technology Stack</h2>
+
+                <h3>Backend Technologies</h3>
+                
+                <h4>Core Framework</h4>
+                <ul>
+                    <li><strong>FastAPI</strong> (0.104.1): Modern, high-performance Python web framework</li>
+                    <li><strong>Uvicorn</strong> (0.24.0): Lightning-fast ASGI server</li>
+                    <li><strong>Python 3.10+:</strong> Primary programming language</li>
+                </ul>
+
+                <h4>AI & Machine Learning</h4>
+                <ul>
+                    <li><strong>Google Generative AI</strong> (0.8.3): Gemini 2.5 Flash for text and vision analysis</li>
+                    <li><strong>PyTorch</strong> (2.1.0): Deep learning framework for blood group prediction</li>
+                    <li><strong>TorchVision</strong> (0.16.0): Computer vision utilities</li>
+                    <li><strong>Pillow</strong> (10.1.0): Image processing library</li>
+                </ul>
+
+                <h4>Document Processing</h4>
+                <ul>
+                    <li><strong>PDFPlumber</strong> (0.10.3): Advanced PDF text extraction</li>
+                    <li><strong>PyPDF2</strong> (3.0.1): PDF manipulation</li>
+                    <li><strong>python-docx</strong> (1.1.0): Word document processing</li>
+                </ul>
+
+                <h4>Utilities</h4>
+                <ul>
+                    <li><strong>python-dotenv</strong> (1.0.0): Environment variable management</li>
+                    <li><strong>requests</strong> (2.31.0): HTTP library for API calls</li>
+                    <li><strong>python-multipart</strong> (0.0.6): File upload handling</li>
+                </ul>
+
+                <h4>Testing</h4>
+                <ul>
+                    <li><strong>pytest</strong> (7.4.3): Testing framework</li>
+                    <li><strong>hypothesis</strong> (6.88.1): Property-based testing</li>
+                </ul>
+
+                <h3>Frontend Technologies</h3>
+                <ul>
+                    <li><strong>Streamlit</strong> (1.28.1): Interactive web application framework</li>
+                    <li><strong>Custom CSS:</strong> Professional medical-grade UI design</li>
+                    <li><strong>Responsive Design:</strong> Mobile and desktop compatible</li>
+                </ul>
+
+                <h3>Architecture Patterns</h3>
+                <ul>
+                    <li><strong>RESTful API:</strong> Standard HTTP methods and status codes</li>
+                    <li><strong>Microservices:</strong> Modular service architecture</li>
+                    <li><strong>MVC Pattern:</strong> Separation of concerns</li>
+                    <li><strong>Error Handling:</strong> Comprehensive error tracking and logging</li>
+                    <li><strong>Async Processing:</strong> Non-blocking I/O operations</li>
+                </ul>
+            </section>
+
+            <section id="architecture">
+                <h2>System Architecture</h2>
+
+                <h3>High-Level Architecture</h3>
+                <div class="architecture-diagram">
+                    <pre>
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend (Streamlit)                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │   Lab    │  │  Image   │  │  Multi   │  │  Blood   │   │
+│  │ Reports  │  │ Analysis │  │  Modal   │  │  Group   │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                    HTTP/REST API
+                            │
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend (FastAPI)                         │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              API Endpoints Layer                      │  │
+│  │  /analyze  /analyze-image  /analyze-multimodal       │  │
+│  │  /predict-blood-group  /health  /status              │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                            │                                 │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │           Business Logic Layer                        │  │
+│  │  ┌────────────────┐  ┌────────────────┐             │  │
+│  │  │ Analysis Engine│  │ Vision Analyzer│             │  │
+│  │  └────────────────┘  └────────────────┘             │  │
+│  │  ┌────────────────┐  ┌────────────────┐             │  │
+│  │  │Document Parser │  │Blood Predictor │             │  │
+│  │  └────────────────┘  └────────────────┘             │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                            │                                 │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              AI Services Layer                        │  │
+│  │  ┌────────────────┐  ┌────────────────┐             │  │
+│  │  │ Gemini Service │  │ Gemini Vision  │             │  │
+│  │  │  (Text AI)     │  │  (Image AI)    │             │  │
+│  │  └────────────────┘  └────────────────┘             │  │
+│  │  ┌────────────────┐  ┌────────────────┐             │  │
+│  │  │Parameter       │  │Threshold       │             │  │
+│  │  │Extractor       │  │Evaluator       │             │  │
+│  │  └────────────────┘  └────────────────┘             │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                    External Services
+                            │
+┌─────────────────────────────────────────────────────────────┐
+│  ┌────────────────┐  ┌────────────────┐  ┌──────────────┐ │
+│  │  Google Gemini │  │  PyTorch CNN   │  │  Reference   │ │
+│  │   API (Cloud)  │  │  (Local Model) │  │  Range DB    │ │
+│  └────────────────┘  └────────────────┘  └──────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h3>Component Breakdown</h3>
+
+                <h4>1. Frontend Layer (Streamlit)</h4>
+                <ul>
+                    <li><strong>Purpose:</strong> User interface and interaction</li>
+                    <li><strong>Components:</strong>
+                        <ul>
+                            <li><code>app.py</code>: Main application entry point</li>
+                            <li><code>handlers.py</code>: Request handlers for each analysis type</li>
+                            <li><code>frontend_components.py</code>: Reusable UI components and styling</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>2. API Layer (FastAPI)</h4>
+                <ul>
+                    <li><strong>Purpose:</strong> RESTful API endpoints</li>
+                    <li><strong>Endpoints:</strong>
+                        <ul>
+                            <li><code>POST /analyze</code>: Lab report analysis</li>
+                            <li><code>POST /analyze-image</code>: Medical image analysis</li>
+                            <li><code>POST /analyze-multimodal</code>: Combined analysis</li>
+                            <li><code>POST /predict-blood-group</code>: Blood group prediction</li>
+                            <li><code>GET /health</code>: Health check</li>
+                            <li><code>GET /status</code>: System status</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>3. Business Logic Layer</h4>
+                <ul>
+                    <li><strong>Analysis Engine:</strong> Orchestrates AI analysis workflow</li>
+                    <li><strong>Document Parser:</strong> Extracts text from PDF/DOCX</li>
+                    <li><strong>Vision Analyzer:</strong> Processes medical images</li>
+                    <li><strong>Blood Group Predictor:</strong> CNN-based prediction</li>
+                </ul>
+
+                <h4>4. AI Services Layer</h4>
+                <ul>
+                    <li><strong>Gemini Service:</strong> Text analysis with medical expertise</li>
+                    <li><strong>Gemini Vision:</strong> Medical image interpretation</li>
+                    <li><strong>Parameter Extractor:</strong> Clinical parameter extraction</li>
+                    <li><strong>Threshold Evaluator:</strong> Reference range validation</li>
+                    <li><strong>Risk Explainer:</strong> Risk assessment and explanation</li>
+                </ul>
+
+                <h4>5. Data Layer</h4>
+                <ul>
+                    <li><strong>Reference Range Database:</strong> Clinical parameter normal ranges</li>
+                    <li><strong>ML Models:</strong> Pre-trained PyTorch CNN for blood groups</li>
+                    <li><strong>Configuration:</strong> Environment-based settings</li>
+                </ul>
+            </section>
+
+            <section id="installation">
+                <h2>Installation & Setup</h2>
+
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li>Python 3.10 or higher</li>
+                    <li>pip package manager</li>
+                    <li>Google Gemini API key</li>
+                </ul>
+
+                <h3>Step 1: Clone Repository</h3>
+                <pre><code>git clone &lt;repository-url&gt;
+cd HealthCare_analysis</code></pre>
+
+                <h3>Step 2: Install Dependencies</h3>
+                <pre><code>pip install -r requirements.txt</code></pre>
+
+                <h3>Step 3: Configure Environment</h3>
+                <p>Create <code>.env</code> file:</p>
+                <pre><code>cp .env.example .env</code></pre>
+
+                <p>Edit <code>.env</code> and add your Gemini API key:</p>
+                <pre><code>GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_VISION_MODEL=gemini-2.5-flash
+API_HOST=localhost
+API_PORT=8000
+LOG_LEVEL=INFO
+MAX_FILE_SIZE_MB=10</code></pre>
+
+                <h3>Step 4: Run Application</h3>
+                <pre><code>python run.py</code></pre>
+
+                <p>This will start:</p>
+                <ul>
+                    <li>Backend API on <code>http://localhost:8000</code></li>
+                    <li>Frontend UI on <code>http://localhost:8501</code></li>
+                </ul>
+
+                <h3>Alternative: Manual Start</h3>
+                <p><strong>Backend:</strong></p>
+                <pre><code>uvicorn backend.main:app --host localhost --port 8000 --reload</code></pre>
+
+                <p><strong>Frontend:</strong></p>
+                <pre><code>streamlit run frontend/app.py</code></pre>
+            </section>
+
+            <section id="usage">
+                <h2>Usage Guide</h2>
+
+                <h3>Lab Report Analysis</h3>
+                <ol>
+                    <li>Navigate to "Lab Report Analysis" tab</li>
+                    <li>Upload PDF or DOCX file (max 10MB)</li>
+                    <li>Click "Analyze Document"</li>
+                    <li>Review results:
+                        <ul>
+                            <li>Summary</li>
+                            <li>Key Findings</li>
+                            <li>Risk Indicators (color-coded)</li>
+                            <li>Follow-up Suggestions</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>Medical Image Analysis</h3>
+                <ol>
+                    <li>Navigate to "Medical Image Analysis" tab</li>
+                    <li>Select image type or use "Auto-detect"</li>
+                    <li>Upload medical image (JPEG/PNG, max 10MB)</li>
+                    <li>Optionally add clinical context</li>
+                    <li>Click "Analyze Image"</li>
+                    <li>Review:
+                        <ul>
+                            <li>Diagnosis</li>
+                            <li>Issues Identified</li>
+                            <li>Urgency Level</li>
+                            <li>Confidence Score</li>
+                            <li>Follow-up Suggestions</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>Multi-Modal Analysis</h3>
+                <ol>
+                    <li>Navigate to "Multi-Modal Analysis" tab</li>
+                    <li>Upload both lab report and medical image</li>
+                    <li>Add clinical context (optional)</li>
+                    <li>Click "Analyze Both"</li>
+                    <li>Review integrated analysis with correlations</li>
+                </ol>
+
+                <h3>Blood Group Prediction</h3>
+                <ol>
+                    <li>Navigate to "Blood Group Prediction" tab</li>
+                    <li>Upload fingerprint image</li>
+                    <li>Click "Predict Blood Group"</li>
+                    <li>View:
+                        <ul>
+                            <li>Predicted blood group</li>
+                            <li>Confidence percentage</li>
+                            <li>Top 3 predictions</li>
+                            <li>GradCAM visualization (if enabled)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </section>
+
+            <section id="api">
+                <h2>API Documentation</h2>
+
+                <h3>Base URL</h3>
+                <pre><code>http://localhost:8000</code></pre>
+
+                <h3>Endpoints</h3>
+
+                <h4>1. Health Check</h4>
+                <pre><code>GET /health</code></pre>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "status": "healthy",
+  "service": "clinical-report-analyzer",
+  "version": "1.0.0",
+  "analysis_engine": "healthy"
+}</code></pre>
+
+                <h4>2. Analyze Document</h4>
+                <pre><code>POST /analyze
+Content-Type: multipart/form-data</code></pre>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>file</code>: PDF or DOCX file</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "success": true,
+  "filename": "report.pdf",
+  "file_size_mb": 0.29,
+  "analysis": {
+    "summary": "Clinical summary...",
+    "key_findings": ["Finding 1", "Finding 2"],
+    "risk_indicators": [
+      {
+        "finding": "Blood Glucose: 250 mg/dL",
+        "severity": "high",
+        "category": "metabolic",
+        "threshold_based": true
+      }
+    ],
+    "follow_up_suggestions": ["Suggestion 1"],
+    "medical_disclaimer": "..."
+  }
+}</code></pre>
+
+                <h4>3. Analyze Medical Image</h4>
+                <pre><code>POST /analyze-image
+Content-Type: multipart/form-data</code></pre>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>file</code>: Image file (JPEG/PNG)</li>
+                    <li><code>image_type</code>: chest_xray|ct_brain|bone_xray|mri|ultrasound|auto</li>
+                    <li><code>clinical_context</code>: Optional clinical information</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "success": true,
+  "diagnosis": "Diagnosis text",
+  "issues": ["Issue 1", "Issue 2"],
+  "suggestions": ["Suggestion 1"],
+  "confidence": 85,
+  "urgency": "high"
+}</code></pre>
+
+                <h4>4. Multi-Modal Analysis</h4>
+                <pre><code>POST /analyze-multimodal
+Content-Type: multipart/form-data</code></pre>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>report</code>: Lab report file (optional)</li>
+                    <li><code>image</code>: Medical image file (optional)</li>
+                    <li><code>clinical_context</code>: Optional context</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "success": true,
+  "report_analysis": {...},
+  "image_analysis": {...},
+  "correlation": {
+    "integrated_diagnosis": "...",
+    "correlations": [...],
+    "confidence": 85
+  }
+}</code></pre>
+
+                <h4>5. Predict Blood Group</h4>
+                <pre><code>POST /predict-blood-group
+Content-Type: multipart/form-data</code></pre>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>fingerprint</code>: Fingerprint image</li>
+                </ul>
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "success": true,
+  "predicted_blood_group": "O+",
+  "confidence": 92.5,
+  "top_3_predictions": [
+    {"blood_group": "O+", "probability": "92.5%"},
+    {"blood_group": "A+", "probability": "5.2%"},
+    {"blood_group": "B+", "probability": "1.8%"}
+  ]
+}</code></pre>
+            </section>
+
+            <section id="implementation">
+                <h2>Technical Implementation</h2>
+
+                <h3>AI Analysis Pipeline</h3>
+
+                <h4>Text Analysis Flow</h4>
+                <pre><code>1. Document Upload
+   ↓
+2. Document Parsing (PDFPlumber/python-docx)
+   ↓
+3. Text Extraction
+   ↓
+4. Dual Analysis:
+   ├─→ AI Analysis (Gemini 2.5 Flash)
+   │   ├─ Medical expert prompt
+   │   ├─ Structured JSON output
+   │   └─ Safety filters
+   └─→ Threshold Analysis
+       ├─ Parameter extraction
+       ├─ Reference range lookup
+       └─ Deviation calculation
+   ↓
+5. Risk Indicator Merging
+   ↓
+6. Structured Output Generation</code></pre>
+
+                <h4>Image Analysis Flow</h4>
+                <pre><code>1. Image Upload
+   ↓
+2. Image Optimization (resize, compress)
+   ↓
+3. Gemini Vision Analysis
+   ├─ Medical imaging expert prompt
+   ├─ Systematic review protocol
+   └─ Structured output parsing
+   ↓
+4. Urgency Assessment
+   ↓
+5. Confidence Scoring
+   ↓
+6. Structured Output</code></pre>
+
+                <h3>Key Algorithms</h3>
+
+                <h4>1. Risk Severity Classification</h4>
+                <pre><code>risk_patterns = {
+    "high": [
+        r"critical|severe|urgent|emergency",
+        r"complete tear|fracture|hemorrhage",
+        r"malignant|cancer|tumor"
+    ],
+    "medium": [
+        r"partial tear|moderate|elevated",
+        r"abnormal|concerning"
+    ],
+    "low": [
+        r"minor|mild|slightly elevated"
+    ]
+}</code></pre>
+
+                <h4>2. Threshold Evaluation</h4>
+                <pre><code>def evaluate_parameter(value, reference_range):
+    if value &lt; reference_range.min:
+        deviation = ((reference_range.min - value) / reference_range.min) * 100
+        risk = "high" if deviation &gt; 30 else "medium"
+    elif value &gt; reference_range.max:
+        deviation = ((value - reference_range.max) / reference_range.max) * 100
+        risk = "high" if deviation &gt; 30 else "medium"
+    else:
+        risk = "low"
+    return risk, deviation</code></pre>
+
+                <h4>3. Multi-Modal Correlation</h4>
+                <pre><code>correlation_rules = {
+    ("glucose", "retinal"): "Diabetic retinopathy",
+    ("wbc", "infiltrate"): "Bacterial infection",
+    ("cholesterol", "heart"): "Cardiovascular risk"
+}</code></pre>
+
+                <h3>Security & Privacy</h3>
+
+                <h4>Data Handling</h4>
+                <ul>
+                    <li>No data persistence (stateless operation)</li>
+                    <li>Files processed in memory only</li>
+                    <li>No database storage</li>
+                    <li>Temporary files cleaned after processing</li>
+                </ul>
+
+                <h4>API Security</h4>
+                <ul>
+                    <li>CORS configuration</li>
+                    <li>File size limits (10MB)</li>
+                    <li>File type validation</li>
+                    <li>Input sanitization</li>
+                    <li>Error handling without data leakage</li>
+                </ul>
+
+                <h4>Medical Safety</h4>
+                <ul>
+                    <li>Automatic disclaimers on all outputs</li>
+                    <li>Safety filters for diagnostic language</li>
+                    <li>Clear urgency level indicators</li>
+                    <li>Recommendation for professional consultation</li>
+                </ul>
+            </section>
+
+            <section id="future">
+                <h2>Future Enhancements</h2>
+
+                <h3>Planned Features</h3>
+                <ol>
+                    <li><strong>DICOM Support:</strong> Native medical imaging format</li>
+                    <li><strong>Report History:</strong> Optional user account system</li>
+                    <li><strong>Batch Processing:</strong> Multiple file analysis</li>
+                    <li><strong>Export Options:</strong> PDF report generation</li>
+                    <li><strong>Telemedicine Integration:</strong> Video consultation booking</li>
+                    <li><strong>Mobile App:</strong> iOS and Android applications</li>
+                    <li><strong>Offline Mode:</strong> Local AI model support</li>
+                    <li><strong>Multi-Language:</strong> Support for multiple languages</li>
+                    <li><strong>Voice Input:</strong> Speech-to-text for clinical notes</li>
+                    <li><strong>Integration APIs:</strong> EHR/EMR system integration</li>
+                </ol>
+
+                <h3>Research Directions</h3>
+                <ol>
+                    <li><strong>Federated Learning:</strong> Privacy-preserving model training</li>
+                    <li><strong>Explainable AI:</strong> Enhanced interpretability</li>
+                    <li><strong>Predictive Analytics:</strong> Disease progression modeling</li>
+                    <li><strong>Drug Interaction:</strong> Medication safety checking</li>
+                    <li><strong>Clinical Trials:</strong> Patient matching algorithms</li>
+                </ol>
+            </section>
+
+            <section id="conclusion">
+                <h2>Conclusion</h2>
+                <p>MediVision AI represents a significant advancement in AI-powered clinical decision support systems. By combining state-of-the-art AI technology with medical domain expertise, structured output formats, and comprehensive safety features, it provides a specialized solution that goes far beyond general-purpose AI tools.</p>
+                
+                <p>The system's unique dual-analysis pipeline (AI + threshold-based), multi-modal capabilities, and medical-specific features make it an invaluable tool for healthcare professionals and patients seeking to understand complex medical data.</p>
+            </section>
+
+            <section id="license">
+                <h2>License & Disclaimer</h2>
+                <p><strong>Medical Disclaimer:</strong> MediVision AI is for informational purposes only and is not intended as medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical decisions.</p>
+                
+                <p><strong>Copyright:</strong> © 2026 MediVision AI. All rights reserved.</p>
+                
+                <p><strong>Version:</strong> 2.1.0</p>
+            </section>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>MediVision AI - Advanced Clinical Decision Support System</p>
+        <p>For questions, issues, or contributions, please contact the development team.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '#1e3c72';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#e8f0fe';
+                    link.style.color = '#2a5298';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Google Gemini API configuration
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    # Gemini configuration (cloud, high accuracy)
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")  # Text model - Latest stable
+    GEMINI_VISION_MODEL = os.getenv("GEMINI_VISION_MODEL", "gemini-2.5-flash")  # Vision model - Supports multimodal
     
     # File upload limits
     MAX_FILE_SIZE_MB = 10
@@ -22,5 +24,17 @@ class Config:
     def validate_config(cls):
         """Validate required configuration values"""
         if not cls.GEMINI_API_KEY:
-            raise ValueError("GEMINI_API_KEY environment variable is required")
+            raise ValueError("GEMINI_API_KEY is required. Please add it to your .env file")
         return True
+    
+    @classmethod
+    def get_provider_info(cls):
+        """Get information about the current AI provider"""
+        return {
+            "provider": "Gemini (Google)",
+            "type": "cloud",
+            "privacy": "Data sent to Google servers",
+            "accuracy": "High",
+            "text_model": cls.GEMINI_MODEL,
+            "vision_model": cls.GEMINI_VISION_MODEL
+        }
